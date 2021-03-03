@@ -12,7 +12,12 @@
 import Vue from "vue";
 
 export default Vue.extend({
-  name: "App",
+  //lifeCycle
+  created() {
+    this.$router.push({ name: "login" });
+    // this.$router.push({ name: "home" });
+    // this.$router.push({ name: "info" });
+  },
 });
 </script>
 
