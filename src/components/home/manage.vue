@@ -1,135 +1,127 @@
 <template>
   <div id="manage">
-    <transition name="operate">
-      <router-view></router-view>
-    </transition>
-
     <header>
       <div class="text">堆场管理</div>
       <div class="warp">
-        <v-icon
-          x-large
-          :color="warnIcon ? 'red' : 'grey'"
-          :class="{ warnIcon: warnIcon }"
-          @click="showWarnInfo"
-          >fa-exclamation-triangle</v-icon
+        <v-btn
+          @click="showYardLegend"
+          fab
+          elevation="1"
+          :disabled="isShowYardLegend"
+          ><v-icon large color="black">fa-bars</v-icon></v-btn
         >
-        <v-icon x-large color="blue">fa-plus-circle</v-icon>
+        <v-btn v-if="!isAllYard" fab elevation="1" @click="showWarnInfo">
+          <v-icon
+            large
+            :color="warnIcon ? 'red' : 'grey'"
+            :class="{ warnIcon: warnIcon }"
+            >fa-exclamation-triangle</v-icon
+          >
+        </v-btn>
+        <v-btn fab elevation="1"
+          ><v-icon large color="blue">fa-plus</v-icon></v-btn
+        >
       </div>
     </header>
 
-    <main>
-      <!-- 第一行特殊值 -->
-      <div class="row-header row">
-        <!-- 第一个占位盒子 -->
-        <div class="none-box box"></div>
-        <!-- 第一行特殊值盒子 -->
-        <div class="box" v-for="item in currentData[0].length" :key="item">
-          {{ item + 100 }}
-        </div>
-      </div>
-      <!-- 构建堆场 -->
-      <div
-        class="row"
-        v-for="(item, row) in currentData"
-        :key="item[0] + Math.random()"
-        :class="{ ['row-odd']: row % 2 === 0 }"
-      >
-        <!-- 头部特殊盒子 -->
-        <div class="none-box box">{{ row }}</div>
-        <div
-          class="box"
-          v-for="(i, col) in item"
-          :key="i + Math.random()"
-          :class="{
-            ['box-red']: i === 0,
-            ['box-green']: i === 2,
-            ['box-blue']: i === 3,
-          }"
-          @click="toOperate(i, row, col + 100, $event)"
-        ></div>
-      </div>
-    </main>
+    <!-- <transition name="yard" mode="out-in"> -->
+    <transition name="allYard">
+      <all-yard :yardNum="yard.length" v-if="isAllYard"></all-yard>
+    </transition>
+    <transition name="singleYard">
+      <single-yard
+        :yard="currentData"
+        :pageData="yardIndex"
+        v-if="!isAllYard"
+      ></single-yard>
+    </transition>
+    <!-- </transition> -->
 
-    <div class="countInfo">
-      <div class="total">堆场总个数:{{ yard.length }}</div>
-      <div class="current">当前堆场编号:{{ pageData + 1 }}</div>
+    <div v-if="!isAllYard" class="countInfo">
+      <div class="total">总分区个数:{{ yard.length }}</div>
+      <div class="current">当前分区编号:{{ yardIndex + 1 }}</div>
     </div>
+    <div v-else class="countInfoPlace"></div>
 
     <footer>
-      <v-btn @click="toLeft" fab elevation="1" large>
-        <v-icon>fa-angle-left</v-icon>
+      <v-btn @click="toAllYard" fab elevation="1" large v-if="!isAllYard">
+        <v-icon>fa-reply</v-icon>
       </v-btn>
       <v-btn fab large elevation="1" @click="toStatistics">
         <v-icon>fa-bar-chart</v-icon>
       </v-btn>
-      <v-btn @click="toRight" fab elevation="1" large>
-        <v-icon>fa-angle-right </v-icon>
-      </v-btn>
     </footer>
+
+    <transition name="yardLegend">
+      <yard-legend v-if="isShowYardLegend"></yard-legend>
+    </transition>
+
+    <transition name="statistics">
+      <router-view></router-view>
+    </transition>
   </div>
 </template>
 
 <script lang="ts">
 import { Component } from "vue-property-decorator";
 import Vue from "vue";
-import { MyAlert } from "vue/types/vue";
+import { Home } from "vue/types/vue";
 import { mapState } from "vuex";
+import SingleYard from "@/components/home/manage/singleYard.vue";
+import AllYard from "@/components/home/manage/allYard.vue";
+import yardLegend from "@/components/home/manage/yardLegend.vue";
+import { containerInfo } from "@/store/module";
 
 @Component({
   name: "manage",
   computed: {
     ...mapState({
-      yard: (state: any) => state.yard.data,
+      yard: (state: any) => state.yard.yardArray,
+      isAllYard: (state: any) => state.yard.isAllYard,
+      yardIndex: (state: any) => state.yard.yardIndex,
     }),
+  },
+  components: {
+    SingleYard,
+    AllYard,
+    yardLegend,
   },
 })
 export default class Manage extends Vue {
   //data
-  private pageData = 0;
-  public yard!: [[number[]]];
+  public yard!: [[(containerInfo | undefined)[]]];
+  public yardIndex!: number;
+  private isShowYardLegend: boolean = false;
 
   //methods
   toStatistics() {
     this.$router.push({ name: "statistics" });
   }
-  toOperate(id: string, row: string, col: string, event: any) {
-    this.$router.push({
-      name: "operate",
-      params: {
-        id,
-        index: this.pageData.toString(), //tmp
-        row,
-        col,
-      },
-    });
-  }
-  toLeft() {
-    if (--this.pageData < 0) {
-      this.pageData = this.yard.length - 1;
-    }
-  }
-  toRight() {
-    if (++this.pageData >= this.yard.length) {
-      this.pageData = 0;
-    }
-  }
   showWarnInfo() {
-    (this.$parent.$refs.alert as MyAlert).showUp(
+    (this.$parent as Home).$refs.alert.showUp(
       3000,
       "warning",
       "若此标志闪烁，说明当前堆场存在需要维修的货箱"
     );
   }
+  toAllYard() {
+    this.$store.commit("yard/changeView");
+  }
+  showYardLegend() {
+    this.isShowYardLegend = true;
+    setTimeout(() => {
+      this.isShowYardLegend = false;
+    }, 2000);
+  }
 
   //computed
   get currentData() {
-    return this.yard[this.pageData];
+    return this.yard[this.yardIndex];
   }
   get warnIcon() {
     //判断是否有待维修的货箱
     return this.currentData.some((arr) => {
-      return arr.some((val) => val === 0);
+      return arr.some((val) => val && val.sta == "1");
     });
   }
 }
@@ -140,23 +132,15 @@ export default class Manage extends Vue {
   height: 100%;
   width: 100%;
   header {
-    height: 8vh;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    @include myHeader;
     .text {
-      text-align: center;
-      font-weight: bolder;
-      font-size: 1.5rem;
-      line-height: 8vh;
-      flex-grow: 1;
-      height: inherit;
+      @include headerText;
+      background-color: #91a0b6;
     }
     .warp {
-      padding-left: 20px;
-      .v-icon {
-        margin-right: 20px;
-      }
+      display: flex;
+      justify-content: flex-end;
+      flex-grow: 1;
       .warnIcon {
         animation-name: warnAnimate;
         animation-duration: 1s;
@@ -176,51 +160,6 @@ export default class Manage extends Vue {
       }
     }
   }
-  main {
-    padding: 20px 20px 0 0;
-    height: 62.5vh;
-    // 偶数行
-    .row-odd {
-      .box {
-        background-color: #e0e0e0;
-      }
-    }
-    // 每一行
-    .row {
-      display: flex;
-      // 普通盒子
-      .box {
-        height: 50px;
-        width: 50px;
-        line-height: 50px;
-        border-color: rgba(0, 0, 0, 0.15);
-        border-style: outset;
-        flex-grow: 1;
-        text-align: center;
-      }
-      // 头部特殊盒子
-      .none-box {
-        width: 25px;
-        border: none;
-        background-color: unset;
-      }
-      .box-green {
-        background-color: #71b253;
-      }
-      .box-red {
-        background-color: #e59090;
-      }
-      .box-blue {
-        background-color: #58a4ce;
-      }
-    }
-    // 第一行盒子
-    .row-header {
-      .box {
-        border: none;
-      }
-    }
-  }
   .countInfo {
     margin: 20px 0;
     display: flex;
@@ -228,17 +167,37 @@ export default class Manage extends Vue {
     font-weight: bolder;
     font-size: 1.125rem;
   }
+  .countInfoPlace {
+    margin: 20px 0;
+    height: 26.4px;
+  }
   footer {
     display: flex;
     justify-content: space-around;
   }
-  .operate-enter-active {
+  .yardLegend-enter-active {
     animation-name: fadeInDown;
+    animation-duration: 0.4s;
+  }
+  .yardLegend-leave-active {
+    animation-name: fadeOutUp;
+    animation-duration: 0.4s;
+  }
+  .singleYard-enter-active {
+    animation-name: zoomIn;
     animation-duration: 0.5s;
   }
-  .operate-leave-active {
-    animation-name: fadeOutDown;
+  .allYard-enter-active {
+    animation-name: fadeIn;
     animation-duration: 0.5s;
+  }
+  .statistics-enter-active {
+    animation-name: fadeInDown;
+    animation-duration: 0.4s;
+  }
+  .statistics-leave-active {
+    animation-name: fadeOutUp;
+    animation-duration: 0.4s;
   }
 }
 </style>

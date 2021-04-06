@@ -10,13 +10,20 @@
 
 <script lang="ts">
 import Vue from "vue";
+import plusExtends from "@/plugins/plusExtends";
 
 export default Vue.extend({
   //lifeCycle
   created() {
+    //路由控制
     this.$router.push({ name: "login" });
     // this.$router.push({ name: "home" });
     // this.$router.push({ name: "info" });
+
+    //history获取
+    plusExtends(() => {
+      this.$store.commit("history/init");
+    });
   },
 });
 </script>

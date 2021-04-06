@@ -5,7 +5,7 @@
       <header>集装箱信息</header>
       <div class="content">
         <span class="key">集装箱号：</span>
-        <span class="value">{{ infos.number }}</span>
+        <span class="value">{{ infos.container }}</span>
       </div>
       <div class="content">
         <span class="key">箱主：</span>
@@ -13,7 +13,7 @@
       </div>
       <div class="content">
         <span class="key">状态：</span>
-        <span class="value">{{ infos.status }}</span>
+        <span class="value">{{ infos.status == 0 ? "运输中" : "堆场内" }}</span>
       </div>
       <div class="content">
         <span class="key">箱型：</span
@@ -33,13 +33,13 @@
       </div>
       <div class="content">
         <span class="key">Max.Payload (kg)：</span
-        ><span class="value">{{ infos.payload }}</span>
+        ><span class="value">{{ infos.payLoad }}</span>
       </div>
     </div>
 
     <v-divider></v-divider>
 
-    <v-simple-table v-if="infos.outer">
+    <v-simple-table v-if="infos.status == 0">
       <!-- 外部 -->
       <thead>
         <tr>
@@ -52,12 +52,12 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="item in infos.action" :key="item.name">
-          <td>{{ item.name }}</td>
+        <tr v-for="item in infos.table" :key="item.name">
+          <td>{{ item.operate }}</td>
           <td>{{ item.place }}</td>
           <td>{{ item.date }}</td>
           <td>{{ item.time }}</td>
-          <td>{{ item.way }}</td>
+          <td>{{ item.method }}</td>
           <td>{{ item.voyage }}</td>
         </tr>
       </tbody>
@@ -76,8 +76,8 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="item in infos.action" :key="item.name">
-          <td>{{ item.name }}</td>
+        <tr v-for="item in infos.table" :key="item.name">
+          <td>{{ item.operate }}</td>
           <td>{{ item.place }}</td>
           <td>{{ item.date }}</td>
           <td>{{ item.time }}</td>
@@ -112,16 +112,18 @@ export default class InfoContent extends Vue {}
     header {
       font-size: 18px;
       font-weight: bolder;
-      padding: 10px 0;
-    }
-    :last-child {
-      padding-bottom: 10px;
     }
   }
   .header {
+    padding: 10px;
+    @include contentWarp;
     .key {
       font-weight: bold;
     }
+  }
+  .v-data-table {
+    margin-top: 10px;
+    @include contentWarp;
   }
   th {
     white-space: nowrap;

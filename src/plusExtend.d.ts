@@ -8,6 +8,7 @@ interface plus {
   camera: camera;
   gallery: gallery;
   uploader: uploader;
+  storage: PlusStorage;
 }
 
 // camera
@@ -115,4 +116,30 @@ interface galleryOptions {
   popover?: popPosition;
   selected?: [string];
   onmaxed?: Function;
+}
+
+//storage
+interface PlusStorage {
+  getLength: () => number;
+  getItem: (key: string) => string;
+  getItemAsync: (
+    key: string,
+    successCB: (event: any) => void,
+    errorCB: (err: any) => void
+  ) => void;
+  key: (index: number) => string;
+  setItem: (key: string, value: string) => void;
+  setItemAsync: (
+    key: string,
+    value: string,
+    success: (event: any) => void,
+    errorCB: (err: any) => void
+  ) => void;
+  removeItem: (key: string) => void;
+  removeItemAsync: (
+    key: string,
+    successCB: (event: any) => void,
+    errorCB: (err: any) => void
+  ) => void;
+  getAllKeys: () => string[];
 }

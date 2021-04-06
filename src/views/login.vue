@@ -1,6 +1,11 @@
 <template>
   <div id="login">
-    <header>用户登录</header>
+    <img class="back1" :src="require('@/assets/loginBack1.png')" />
+    <img class="back2" :src="require('@/assets/loginBack2.png')" />
+    <header>
+      <div class="myTitle">登录</div>
+      <div class="subtitle">欢迎再次回来~</div>
+    </header>
     <main>
       <transition name="toggle" mode="out-in">
         <sign-in v-if="isSignIn"></sign-in>
@@ -62,16 +67,33 @@ export default class Login extends Vue {
 <style scoped lang="scss">
 #login {
   height: 100%;
-  padding: 100px 30px 0 30px;
+  padding: 28.5vh 30px 0 30px;
+  img {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+  .back1 {
+    width: 35vw;
+  }
+  .back2 {
+    width: 45vw;
+  }
   header {
     position: absolute;
-    left: 5vw;
-    top: 1vh;
-    font-weight: bolder;
-    font-size: 1.5rem;
+    left: 10vw;
+    top: 14vh;
+    .myTitle {
+      font-size: 1.5rem;
+      font-weight: bold;
+      letter-spacing: 0.5rem;
+    }
+    .subtitle {
+      letter-spacing: 1px;
+      color: #757575;
+    }
   }
   main {
-    height: 300px;
     display: flex;
     flex-direction: column;
     justify-content: center;

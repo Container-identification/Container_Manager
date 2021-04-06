@@ -13,6 +13,10 @@ Vue.use(animated);
 import { api } from "@/api/index";
 Vue.prototype.$api = api;
 
+//ECharts
+import echarts from "@/plugins/echarts";
+Vue.prototype.$echarts = echarts;
+
 //html5+
 // import plusExtends from '@/plugins/plusExtends'
 // Vue.prorotype.$plusExtends=plusExtends

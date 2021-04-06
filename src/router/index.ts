@@ -10,7 +10,7 @@ const routes: Array<RouteConfig> = [
     component: () => import("@/views/home.vue"),
     children: [
       {
-        path: "/",
+        path: "index",
         name: "shot",
         component: () => import("@/components/home/shot.vue"),
       },
@@ -23,17 +23,29 @@ const routes: Array<RouteConfig> = [
         path: "user",
         name: "user",
         component: () => import("@/components/home/user.vue"),
+        children: [
+          {
+            path: "message",
+            name: "message",
+            component: () => import("@/components/home/user/message.vue"),
+          },
+          {
+            path: "index",
+            name: "userIndex",
+            component: () => import("@/components/home/user/index.vue"),
+          },
+          {
+            path: "hrmanage",
+            name: "hrManage",
+            component: () => import("@/components/home/user/hrManage.vue"),
+          },
+        ],
       },
       {
         path: "manage",
         name: "manage",
         component: () => import("@/components/home/manage.vue"),
         children: [
-          {
-            path: "operate/:id",
-            name: "operate",
-            component: () => import("@/components/home/manage/operate.vue"),
-          },
           {
             path: "statistics",
             name: "statistics",

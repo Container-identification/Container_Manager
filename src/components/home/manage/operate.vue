@@ -4,17 +4,14 @@
       <v-card-title>集装箱信息</v-card-title>
       <v-card-text>
         <div class="show" v-if="status">
-          <div class="num">集装箱号 : {{ testData[tmpIndex].num }}</div>
-          <div class="owner">箱主 : {{ testData[tmpIndex].owner }}</div>
-          <div class="status">状态 : {{ testData[tmpIndex].status }}</div>
+          <div class="num">集装箱号 : {{ containerInfo.container }}</div>
+          <div class="owner">箱主 : {{ containerInfo.owner }}</div>
+          <div class="status">状态 : {{ containerStatus }}</div>
           <div class="location">位置 : {{ locationText }}</div>
-          <div class="type">箱型 : {{ testData[tmpIndex].type }}</div>
-          <div class="weight">重量 : {{ testData[tmpIndex].weight }}</div>
-          <div class="bear">承重 : {{ testData[tmpIndex].bear }}</div>
-          <v-img
-            height="200px"
-            :src="require(`../../../assets/containerTest${tmpIndex + 1}.jpg`)"
-          ></v-img>
+          <div class="type">箱型 : {{ containerInfo.type }}</div>
+          <div class="weight">重量 : {{ containerInfo.tare }}</div>
+          <div class="bear">承重 : {{ containerInfo.payLoad }}</div>
+          <v-img height="200px" :src="containerImg"></v-img>
         </div>
         <div class="edit" v-else>
           <v-text-field
@@ -22,17 +19,34 @@
             label="输入集装箱号"
             append-icon="fa-camera"
             @click:append="identify"
+            v-model="editInfo.container"
           ></v-text-field>
-          <v-text-field dense label="输入箱主"></v-text-field>
+          <v-text-field
+            dense
+            label="输入箱主"
+            v-model="editInfo.owner"
+          ></v-text-field>
           <v-text-field
             disabled
             dense
             label="位置"
             :value="locationText"
           ></v-text-field>
-          <v-text-field dense label="输入箱型"></v-text-field>
-          <v-text-field dense label="输入重量"></v-text-field>
-          <v-text-field dense label="输入承重"></v-text-field>
+          <v-text-field
+            dense
+            label="输入箱型"
+            v-model="editInfo.type"
+          ></v-text-field>
+          <v-text-field
+            dense
+            label="输入重量"
+            v-model="editInfo.tare"
+          ></v-text-field>
+          <v-text-field
+            dense
+            label="输入承重"
+            v-model="editInfo.payLoad"
+          ></v-text-field>
           <v-btn fab elevation="1" @click="insertImg">
             <v-icon>fa-camera-retro</v-icon>
           </v-btn>
@@ -54,92 +68,97 @@
 <script lang="ts">
 import { Component } from "vue-property-decorator";
 import Vue from "vue";
-import { MyAlert } from "vue/types/vue";
+import { Home, SingleYard } from "vue/types/vue";
+import { containerInfo, infoData } from "@/store/module";
+import { mapState } from "vuex";
+import yardHandleOut from "@/utils/yardHandleOut";
+const config = require("@/config.json");
 
 @Component({
   name: "operate",
+  props: {
+    containerInfo: {
+      required: true,
+    },
+    locate: {
+      required: true,
+    },
+  },
+  computed: {
+    ...mapState({
+      token: (state: any) => state.token,
+      identifyInfo: (state: any) => state.info.result,
+    }),
+  },
 })
 export default class Operate extends Vue {
   //data
-  testData = [
-    {
-      num: "HLBU 94669410",
-      owner: "HAPAG-LLOYD 罗特",
-      status: "堆场中",
-      // location: "101-01",
-      type: "22RT",
-      weight: "3000kg",
-      bear: "29000kg",
-    },
-    {
-      num: "SUDU 1155480",
-      owner: "MAERSK 马士基",
-      status: "堆场中",
-      type: "22RT",
-      weight: "3200",
-      bear: "27280",
-    },
-    {
-      num: "FCIU 4521291",
-      owner: "MSC 地中海",
-      status: "堆场中",
-      type: "22RT",
-      weight: "2180",
-      bear: "28300",
-    },
-  ];
-  //tmp
-  tmpIndex = Math.floor(Math.random() * 3);
-  private status = this.$route.params.id != "1";
-  private location = {
-    index: parseInt(this.$route.params.index),
-    row: this.$route.params.row,
-    col: this.$route.params.col,
+  public containerInfo: containerInfo | undefined;
+  public locate: any;
+  public editInfo: containerInfo = {
+    container: "",
+    status: 0,
+    order: "",
+    owner: "",
+    type: "",
+    tare: "",
+    payLoad: "",
+    sta: 0,
+    url: "", //???
   };
+  public identifyInfo!: infoData;
 
   //methods
   back() {
-    this.$router.back();
+    (this.$parent as SingleYard).closeOperate();
   }
   goOut(flag: boolean) {
-    //tmp
     if (flag) {
-      this.$store.commit(
-        "yard/setYard",
-        Object.assign({ val: 1 }, this.location)
-      );
+      //出库
+      let data: any = {
+        token: this.token,
+        order: yardHandleOut(this.locate),
+        locate: this.locate,
+      };
+      this.$api.deleteContainer(data, this, this.$parent.$parent.$parent);
     } else {
-      this.$store.commit(
-        "yard/setYard",
-        Object.assign({ val: 2 }, this.location)
-      );
+      //入库
+      let data: any = this.editInfo;
+      data.token = this.token;
+      data.order = yardHandleOut(this.locate);
+      data.locate = this.locate;
+      this.$api.operate(data, this, this.$parent.$parent.$parent);
     }
     this.back();
   }
-  identify() {
-    //tmp
+  async identify() {
     plus.gallery.pick(
       (file) => {
-        this.$parent.$parent.loading = true;
-        this.$parent.$parent.loadingText = "上传中";
-        setTimeout(() => {
-          this.$parent.$parent.loading = false;
-          (this.$parent.$parent.$refs.alert as MyAlert).showUp(
-            2000,
-            "success",
-            "识别成功!"
-          );
-          this.status = true;
-        }, 2000);
+        this.$api.identify(
+          file,
+          this.token,
+          this,
+          this.$parent.$parent.$parent
+        );
       },
-      (error) => {
-        console.log("error!");
+      (err) => {
+        console.log(err.message);
+        (this.$parent.$parent.$parent as Home).$refs.alert.showUp(
+          2000,
+          "warning",
+          "添加失败"
+        );
       },
-      {
-        multiple: false,
-        permissionAlert: true,
-      }
+      { multiple: false, permissionAlert: true }
     );
+
+    // //tmp
+    // await this.$api.identify(
+    //   "ssssss",
+    //   this.token,
+    //   this,
+    //   this.$parent.$parent.$parent
+    // );
   }
   insertImg() {
     console.log("插入图片");
@@ -147,7 +166,20 @@ export default class Operate extends Vue {
 
   //computed
   get locationText() {
-    return `${this.location.row}-${this.location.col}`;
+    //计算实际位置
+    let row = Math.floor(this.locate.pageData / 3) * 8 + this.locate.row;
+    let col = Math.floor(this.locate.pageData % 3) * 5 + this.locate.col;
+    return `${row + 1}-${col + 1}`;
+  }
+  get status() {
+    // return this.containerInfo !== undefined;
+    return this.containerInfo != undefined;
+  }
+  get containerStatus() {
+    return this.containerInfo?.status == 0 ? "运输中" : "堆场内";
+  }
+  get containerImg() {
+    return config.serverAddress + this.containerInfo?.url;
   }
 }
 </script>
@@ -155,6 +187,7 @@ export default class Operate extends Vue {
 <style scoped lang="scss">
 #operate {
   position: fixed;
+  top: 0;
   z-index: 1;
   height: 100vh;
   width: 100vw;

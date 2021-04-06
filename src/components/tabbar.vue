@@ -1,11 +1,6 @@
 <template>
   <div id="tabbar">
-    <v-bottom-navigation
-      color="light-blue darken-1"
-      grow
-      @change="redirect"
-      :value="active"
-    >
+    <v-bottom-navigation grow @change="redirect" :value="active">
       <v-btn value="shot">
         <span>识别</span>
         <v-icon>fa-camera</v-icon>
@@ -38,9 +33,20 @@ export default class Tabbar extends Vue {
   private active = "shot";
 
   //methods
-  redirect(name: string) {
+  redirect(name: string, payload?: any) {
     this.active = name;
-    this.$router.push({ name: name });
+
+    if (name === "search" && payload != undefined) {
+      this.$router.push({
+        name: name,
+        params: {
+          container: payload.container,
+          containerImg: payload.containerImg,
+        },
+      });
+    } else {
+      this.$router.push({ name: name });
+    }
   }
 }
 </script>
@@ -51,7 +57,13 @@ export default class Tabbar extends Vue {
   bottom: 0;
   width: 100vw;
   z-index: 1;
-  min-height: 56px;
+  // min-height: 56px;
   // height: 8vh;
+  .v-bottom-navigation {
+    height: 56px !important;
+    button {
+      height: 56px !important;
+    }
+  }
 }
 </style>

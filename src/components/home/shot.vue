@@ -2,10 +2,12 @@
   <div id="shot">
     <header>
       <div class="text">箱号识别</div>
-      <v-btn outlined @click="getImg(false)"
-        ><v-icon>fa-picture-o</v-icon>
-        <!-- <span>相册中选择</span> -->
-      </v-btn>
+      <div class="warp">
+        <v-btn fab elevation="1" @click="getImg(false)"
+          ><v-icon>fa-picture-o</v-icon>
+          <!-- <span>相册中选择</span> -->
+        </v-btn>
+      </div>
     </header>
     <div class="warp">
       <v-btn
@@ -49,15 +51,12 @@ export default class Show extends Vue {
   getImg(isShot: Boolean) {
     //图片选择方式
 
-    //tmp
-    isShot = false;
-
     if (isShot) {
       //拍照
       let cmr = plus.camera.getCamera();
       cmr.captureImage(
         (filePath) => {
-          this.$api.upload(filePath, this.$parent, this.token);
+          this.$api.upload(filePath, this.$parent, this.token, true);
         },
         (err) => {
           console.log(err.code, err.message);
@@ -68,7 +67,7 @@ export default class Show extends Vue {
       //相册中选择
       plus.gallery.pick(
         (filePath) => {
-          this.$api.upload(filePath, this.$parent, this.token);
+          this.$api.upload(filePath, this.$parent, this.token, true);
         },
         (err) => {
           console.log(err.code, err.message);
@@ -90,28 +89,15 @@ export default class Show extends Vue {
     left: 0;
     top: 0;
     width: 100vw;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 8vh;
+    @include myHeader;
     .text {
-      text-align: center;
-      font-weight: bolder;
-      font-size: 1.5rem;
-      line-height: 8vh;
-      flex-grow: 1;
-      height: inherit;
+      @include headerText;
+      background-color: #a0e483;
     }
-    .v-btn {
-      height: 100%;
-      flex-grow: 1;
-      background-color: #64b5f6;
-      color: #fff;
-      // ::v-deep .v-btn__content {
-      //   i {
-      //     margin-right: 5%;
-      //   }
-      // }
+    .warp {
+      display: flex;
+      justify-self: flex-end;
+      margin: 0;
     }
   }
   .warp {
@@ -126,6 +112,7 @@ export default class Show extends Vue {
       padding: 40px;
       margin-bottom: 90px;
       z-index: 1;
+      background-color: #fff;
     }
     .wave {
       position: absolute;

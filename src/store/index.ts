@@ -3,10 +3,12 @@ import Vuex from "vuex";
 
 import info from "./modules/info";
 import yard from "./modules/yard";
+import history from "./modules/history";
+import { myRootState } from "./module";
 
 Vue.use(Vuex);
 
-export default new Vuex.Store({
+export default new Vuex.Store<myRootState>({
   state: {
     token: "",
     tmpIndex: 0,
@@ -33,5 +35,6 @@ export default new Vuex.Store({
   modules: {
     info,
     yard,
+    history,
   },
 });

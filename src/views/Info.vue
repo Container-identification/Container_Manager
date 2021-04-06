@@ -3,7 +3,7 @@
     <header>查询结果</header>
 
     <div class="warp">
-      <info-content :infos="info[tmpIndex]"></info-content>
+      <info-content :infos="info"></info-content>
     </div>
 
     <transition name="btn" :appear="true">
@@ -34,8 +34,7 @@ import InfoContent from "@/components/infoContent.vue";
   name: "info",
   computed: {
     ...mapState({
-      info: (state: any) => state.info.manyInfos,
-      tmpIndex: (state: any) => state.tmpIndex,
+      info: (state: any) => state.info.result,
     }),
   },
   components: {
@@ -51,12 +50,6 @@ export default class Info extends Vue {
     this.dialogFlag = false;
     if (confrim) {
       this.$router.go(-1);
-      this.$store.dispatch("asyncTmpIndex");
-      // this.$store.commit("info/setMsg", {
-      //   msg1: "",
-      //   msg2: "",
-      //   msg3: "",
-      // });
     }
   }
 }
@@ -65,16 +58,18 @@ export default class Info extends Vue {
 <style scoped lang="scss">
 #Info {
   height: 100vh;
+  background-color: $homeBackground;
   header {
     font-weight: bolder;
-    font-size: 1.5rem;
-    line-height: 8vh;
-    margin-left: 15vw;
+    font-size: $headerFontSize;
+    line-height: $headerHeight;
+    padding-left: 15vw;
+    @include myHeader;
   }
   .warp {
     max-height: 70vh;
     overflow: scroll;
-    padding: 10px 30px 0 30px;
+    padding: 30px;
     border: thin solid rgba(0, 0, 0, 0.15);
     border-left: none;
     border-right: none;
