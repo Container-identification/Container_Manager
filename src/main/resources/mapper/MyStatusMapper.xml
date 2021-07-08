@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hanzoy.container_identification.mapper.MyStatusMapper">
+    <insert id="insertStatus" useGeneratedKeys="true" parameterType="com.hanzoy.container_identification.domain.Status_1">
+        insert into jzx.status_1(container, operate, place, date, time, person, remark)
+        VALUES (#{container}, #{operate}, #{place}, #{date}, #{time}, #{person}, #{remark})
+    </insert>
+
+    <select id="selectConByOrder" parameterType="string" resultType="string">
+        select container from jzx.containers where orders = #{order};
+    </select>
+</mapper>
