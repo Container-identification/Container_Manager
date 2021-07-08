@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hanzoy.container_identification.mapper.ContainersMapper">
+  <resultMap id="BaseResultMap" type="com.hanzoy.container_identification.domain.Containers">
+    <id column="orders" jdbcType="INTEGER" property="orders" />
+    <result column="sta" jdbcType="INTEGER" property="sta" />
+    <result column="container" jdbcType="VARCHAR" property="container" />
+    <result column="owner" jdbcType="VARCHAR" property="owner" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="tare" jdbcType="VARCHAR" property="tare" />
+    <result column="payLoad" jdbcType="VARCHAR" property="payload" />
+    <result column="URL" jdbcType="VARCHAR" property="url" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    orders, sta, container, owner, status, type, tare, payLoad, URL
+  </sql>
+  <select id="selectByExample" parameterType="com.hanzoy.container_identification.domain.ContainersExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from containers
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from containers
+    where orders = #{orders,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from containers
+    where orders = #{orders,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.hanzoy.container_identification.domain.ContainersExample">
+    delete from containers
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.hanzoy.container_identification.domain.Containers">
+    insert into containers (orders, sta, container, 
+      owner, status, type, 
+      tare, payLoad, URL)
+    values (#{orders,jdbcType=INTEGER}, #{sta,jdbcType=INTEGER}, #{container,jdbcType=VARCHAR}, 
+      #{owner,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, #{type,jdbcType=VARCHAR}, 
+      #{tare,jdbcType=VARCHAR}, #{payload,jdbcType=VARCHAR}, #{url,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hanzoy.container_identification.domain.Containers">
+    insert into containers
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="orders != null">
+        orders,
+      </if>
+      <if test="sta != null">
+        sta,
+      </if>
+      <if test="container != null">
+        container,
+      </if>
+      <if test="owner != null">
+        owner,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="type != null">
+        type,
+      </if>
+      <if test="tare != null">
+        tare,
+      </if>
+      <if test="payload != null">
+        payLoad,
+      </if>
+      <if test="url != null">
+        URL,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="orders != null">
+        #{orders,jdbcType=INTEGER},
+      </if>
+      <if test="sta != null">
+        #{sta,jdbcType=INTEGER},
+      </if>
+      <if test="container != null">
+        #{container,jdbcType=VARCHAR},
+      </if>
+      <if test="owner != null">
+        #{owner,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="tare != null">
+        #{tare,jdbcType=VARCHAR},
+      </if>
+      <if test="payload != null">
+        #{payload,jdbcType=VARCHAR},
+      </if>
+      <if test="url != null">
+        #{url,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.hanzoy.container_identification.domain.ContainersExample" resultType="java.lang.Long">
+    select count(*) from containers
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update containers
+    <set>
+      <if test="record.orders != null">
+        orders = #{record.orders,jdbcType=INTEGER},
+      </if>
+      <if test="record.sta != null">
+        sta = #{record.sta,jdbcType=INTEGER},
+      </if>
+      <if test="record.container != null">
+        container = #{record.container,jdbcType=VARCHAR},
+      </if>
+      <if test="record.owner != null">
+        owner = #{record.owner,jdbcType=VARCHAR},
+      </if>
+      <if test="record.status != null">
+        status = #{record.status,jdbcType=INTEGER},
+      </if>
+      <if test="record.type != null">
+        type = #{record.type,jdbcType=VARCHAR},
+      </if>
+      <if test="record.tare != null">
+        tare = #{record.tare,jdbcType=VARCHAR},
+      </if>
+      <if test="record.payload != null">
+        payLoad = #{record.payload,jdbcType=VARCHAR},
+      </if>
+      <if test="record.url != null">
+        URL = #{record.url,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update containers
+    set orders = #{record.orders,jdbcType=INTEGER},
+      sta = #{record.sta,jdbcType=INTEGER},
+      container = #{record.container,jdbcType=VARCHAR},
+      owner = #{record.owner,jdbcType=VARCHAR},
+      status = #{record.status,jdbcType=INTEGER},
+      type = #{record.type,jdbcType=VARCHAR},
+      tare = #{record.tare,jdbcType=VARCHAR},
+      payLoad = #{record.payload,jdbcType=VARCHAR},
+      URL = #{record.url,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hanzoy.container_identification.domain.Containers">
+    update containers
+    <set>
+      <if test="sta != null">
+        sta = #{sta,jdbcType=INTEGER},
+      </if>
+      <if test="container != null">
+        container = #{container,jdbcType=VARCHAR},
+      </if>
+      <if test="owner != null">
+        owner = #{owner,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="type != null">
+        type = #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="tare != null">
+        tare = #{tare,jdbcType=VARCHAR},
+      </if>
+      <if test="payload != null">
+        payLoad = #{payload,jdbcType=VARCHAR},
+      </if>
+      <if test="url != null">
+        URL = #{url,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where orders = #{orders,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hanzoy.container_identification.domain.Containers">
+    update containers
+    set sta = #{sta,jdbcType=INTEGER},
+      container = #{container,jdbcType=VARCHAR},
+      owner = #{owner,jdbcType=VARCHAR},
+      status = #{status,jdbcType=INTEGER},
+      type = #{type,jdbcType=VARCHAR},
+      tare = #{tare,jdbcType=VARCHAR},
+      payLoad = #{payload,jdbcType=VARCHAR},
+      URL = #{url,jdbcType=VARCHAR}
+    where orders = #{orders,jdbcType=INTEGER}
+  </update>
+</mapper>
